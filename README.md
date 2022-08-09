@@ -6,7 +6,7 @@ First of all we will make our FASTApi and connect our SQLite database with it. F
 ```bash
 pip install fastapi
 ```
-You should have already installed sqlite3 on you local machine, i am giving you link from where you can download it: https://www.sqlite.org/download.html
+You should have already installed sqlite3 on your local machine, i am giving you link from where you can download it: https://www.sqlite.org/download.html
 
 
 ## License
