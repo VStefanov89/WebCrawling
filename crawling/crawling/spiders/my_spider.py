@@ -1,5 +1,5 @@
 import scrapy
-from ..items import TryscrapyItem
+from ..items import CrawlingItem
 
 class ArticleSpider(scrapy.Spider):
     name = "article"
@@ -27,7 +27,7 @@ class ArticleSpider(scrapy.Spider):
     ]
 
     def parse(self, response, **kwargs):
-        item = TryscrapyItem()
+        item = CrawlingItem()
 
         date =  response.css("div.nbs-post__date::text").get()
         name = response.css("h1.headline::text").get()
