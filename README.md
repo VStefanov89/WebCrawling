@@ -1,22 +1,25 @@
 # WebCrawling
 Task: Crawl few links, create database to store the data and give endpoints to see the data.
 
-## Installation
-First of all we will make our FASTApi and connect our SQLite database with it. For that perpose you should install fastapi from pip.
+## First part: Configuration of FASTAPI and UVICORN server
+### Installation
+Use your terminal
 ```bash
 pip install fastapi
 ```
-and you will also need an ASGI server, for production such as Uvicorn.
+after that
 ```bash
 pip install "uvicorn[standard]"
 ```
 You should have already installed sqlite3 on your local machine, i am giving you link from where you can download it: https://www.sqlite.org/download.html.
 
-In our project WebCrawling we are creating "api" directory. In that directory we create "fastapi" module where we will implement our connection with database and create our endpoints which are part of out tast.
-In "fastapi" module we have database.py file. And now is the time to install sqlalchemy package. You can do that from our terminal and write like this:
+### Usage
+In our project WebCrawling we are creating "api" directory. In that directory we create "fastapi" module where we will implement our connection with database using sqlalchemy package and user all the features from FASTApi framework to be able to create our API for the task.
+In "fastapi" module we are creating database.py file. And now is the time to install sqlalchemy package. You can do that from our terminal and write like this:
 ```bash
 pip install sqlalchemy
 ```
+when you do that you can use that script for creating a database with name "articles" where we will populate our scrapped articles.
 Our Implementation is looking like this:
 ```python
 from sqlalchemy import create_engine
@@ -52,8 +55,9 @@ class Article(Base):
 
 ```
 !!! Note that sqlite does not support datetime that's why our date column is type of string!!!
+Here we are using features from sqlalchemy like Column, Integer and String, to create our table like we want. What we are doing here is just telling that we will have database with name "Article" and table with name " scrapped_articles", which will have columns id, date, name, link, labels and content with the corresponding types. Nothing more.
 
-It's time for out schemas.py file where we will create two classes. First class is ArticleBase which inherits from BaseModel class and second class is ArticleOut which inherits from ArticleBase.In that file we have nothing but validation of our columns and what we want to see when we get response from our API.
+It's time for out schemas.py file where we will create two classes. First class is ArticleBase which inherits from BaseModel class which is from pydantic package(this is something that you already have if you have installed fastapi already) and second class is ArticleOut which inherits from ArticleBase.In that file we have nothing but validation of our columns. It is important to note that in these classes we only declare our types of columns, so when we get response from the server to know that we can only have these kind ot types, if we give something different we will get error message.
 ```python
 from pydantic import BaseModel
 
@@ -131,6 +135,23 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     return  crud.delete_item(db, item_id=item_id)
 
 ```
+
+
+## Second part: Configuration of SCRAPY
+### Installation
+First of all we should do this:
+```bash
+pip install scrapy
+```
+After that you can write in your terminal this:
+```bash
+scrapy startproject crawling
+```
+"crawling is something that you can pick. For this task i will use "crawling" as my scrapy project. When you do that few things will happend:
+- you create directory in your WebCrawling projet with name crawling;
+- in that directory you will make module with the same name "crawling;
+- in that module "crawling" you will have "spiders" module, which is generated automaticly and this is the place where you will create your own spiders. We will talk about that later;
+- you will also get some others files in crawling module which are generated automaticly from Scrapy. All these files will be used when you want to crawl some site.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
