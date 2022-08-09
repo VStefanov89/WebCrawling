@@ -30,7 +30,44 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 ```
+Second file which wre are creating is called models.py. In that file we are creating template of our database, what is the name of our table and what kind of columns it will have. So in our project our database is called Article and our table is "scrapped_articles", here is the code:
+```python
+from sqlalchemy import Column, Integer, String
+from database import Base
 
+
+class Article(Base):
+    __tablename__ = "scrapped_articles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(String)
+    name = Column(String)
+    link = Column(String)
+    labels = Column(String)
+    content = Column(String)
+
+```
+!!! Note that sqlite does not support datetime that's why our date column is type of string!!!
+
+It's time for out schemas.py file where we will create two classes. First class is ArticleBase which inherits from BaseModel class and second class is ArticleOut which inherits from ArticleBase.In that file we have nothing but validation of our columns and what we want to see when we get response from our API.
+```python
+from pydantic import BaseModel
+
+
+class ArticleBase(BaseModel):
+    class Config:
+        orm_mode = True
+
+
+class ArticleOut(ArticleBase):
+    id: int
+    date: str
+    name: str
+    link: str
+    labels: str
+    content: str
+
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
