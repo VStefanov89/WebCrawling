@@ -6,6 +6,10 @@ First of all we will make our FASTApi and connect our SQLite database with it. F
 ```bash
 pip install fastapi
 ```
+and you will also need an ASGI server, for production such as Uvicorn.
+```bash
+pip install "uvicorn[standard]"
+```
 You should have already installed sqlite3 on your local machine, i am giving you link from where you can download it: https://www.sqlite.org/download.html.
 
 In our project WebCrawling we are creating "api" directory. In that directory we create "fastapi" module where we will implement our connection with database and create our endpoints which are part of out tast.
@@ -30,7 +34,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 ```
-Second file which wre are creating is called models.py. In that file we are creating template of our database, what is the name of our table and what kind of columns it will have. So in our project our database is called Article and our table is "scrapped_articles", here is the code:
+Second file which we are creating is called models.py. In that file we are creating template of our database, what is the name of our table and what kind of columns it will have. So in our project our database is called Article and our table is "scrapped_articles", here is the code:
 ```python
 from sqlalchemy import Column, Integer, String
 from database import Base
@@ -66,6 +70,65 @@ class ArticleOut(ArticleBase):
     link: str
     labels: str
     content: str
+
+```
+In our project we will have and crud.py file. In that file we will have reusable functions to interact with the data in the database.
+```python
+from sqlalchemy.orm import Session
+import models
+
+
+def get_item(db: Session, item_id: int):
+    return db.query(models.Article).filter(models.Article.id == item_id).first()
+
+def get_items(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Article).offset(skip).limit(limit).all()
+
+def delete_item(db: Session, item_id:int):
+    item = db.query(models.Article).filter(models.Article.id == item_id).first()
+    db.delete(item)
+    db.commit()
+    return f"Successfully deleted user with ID{item_id}"
+```
+Of course we cannot escape from our main.py file where we will integrate and use all the other parts we created before.
+```python
+from typing import List
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+import models, crud, schemas
+from database import engine, SessionLocal
+
+
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.get("/items/", response_model=List[schemas.ArticleOut])
+def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    items = crud.get_items(db, skip=skip, limit=limit)
+    return items
+
+
+@app.get("/item/{item_id}", response_model=schemas.ArticleOut)
+def read_item(item_id: int, db: Session = Depends(get_db)):
+    db_item = crud.get_item(db, item_id=item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_item
+
+
+@app.delete("/item/{item_id}")
+def delete_item(item_id: int, db: Session = Depends(get_db)):
+    return  crud.delete_item(db, item_id=item_id)
 
 ```
 
