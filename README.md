@@ -327,18 +327,18 @@ About the database... If you go to https://sqliteonline.com/ in the upper left c
 
 After that again go to your terminal and make sure that you are on correct path about your API, now we want to run it... So the path to the API in you machine should look something like this:
 ```bash
-(venv) C:\Users\usr\PycharmProjects\WebCrawling\api\fastapi>
+(venv) ...something...\WebCrawling\api\fastapi>
 ```
 If you are on the correct path then write in your terminal this command:
 
 ```bash
-(venv) C:\Users\usr\PycharmProjects\WebCrawling\api\fastapi>uvicorn main:app --reload
+(venv) ...something...\WebCrawling\api\fastapi>uvicorn main:app --reload
 
 ```
 
 If you do that and everything is correct you should see someting like this:
 ```bash
-(venv) C:\Users\usr\PycharmProjects\WebCrawling\api\fastapi>uvicorn main:app --reload
+(venv) ...something...\WebCrawling\api\fastapi>uvicorn main:app --reload
 INFO:     Will watch for changes in these directories: ['C:\\Users\\usr\\PycharmProjects\\WebCrawling\\api\\fastapi']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [10592] using WatchFiles
