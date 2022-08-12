@@ -9,11 +9,14 @@ class CrawlingPipeline:
 
     @staticmethod
     def get_db_path():
-        working_dir = os.getcwd()
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        parent_dir_path = os.path.abspath(os.path.join(dir_path, os.pardir))
+        project_path = os.path.abspath(os.path.join(parent_dir_path, os.pardir))
         fastapi_dir = r"api\fastapi"
         db_name = "articles.db"
-        db_path = os.path.join(working_dir, fastapi_dir, db_name)
+        db_path = os.path.join(project_path, fastapi_dir, db_name)
         return db_path
+
 
     def create_connection(self):
         self.connection = sqlite3.connect(self.get_db_path())
@@ -30,7 +33,7 @@ class CrawlingPipeline:
                                                   content text)
                                                   """)
 
-    def process_item(self, item):
+    def process_item(self, item, spider):
         self.store_in_table(item)
         return item
 
