@@ -1,5 +1,7 @@
 import scrapy
 from ..items import CrawlingItem
+import w3lib.html
+
 
 class ArticleSpider(scrapy.Spider):
     name = "article"
@@ -33,13 +35,27 @@ class ArticleSpider(scrapy.Spider):
         name = response.css("h1.headline::text").get()
         link = response.request.url
         labels = response.css("div.label--sm::text").get()
-        all_selectors_p_tags = response.css("p")
+        selectors = response.css("p")
         content = ''
-        for selector in all_selectors_p_tags:
-            string_represent_tag = selector.get()
-            if "<strong>" in string_represent_tag:
+        for selector in selectors:
+            text = selector.get()
+            text = w3lib.html.remove_tags(text)
+            if "<p>" in text:
+                text = text.replace("<p>", "")
+            if "</p>" in text:
+                text = text.replace("</p>", "")
+            if "<strong>" in text:
+                text = text.replace("<strong>", "")
+            if "</strong>" in text:
+                text = text.replace("</strong>", "")
+            if "<br>" in text:
+                text = text.replace("<br>", "")
+            if "</br>" in text:
+                text = text.replace("</br>", "")
+            if "Internet:" in text:
                 break
-            content += selector.css("p::text").get()
+
+            content += text
 
         item["date"] = date
         item["name"] = name
@@ -48,4 +64,3 @@ class ArticleSpider(scrapy.Spider):
         item["content"] = content
 
         yield item
-
